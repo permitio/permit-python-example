@@ -1,5 +1,12 @@
-venv
+# VS_CODE #
 .vscode
+
+# PYTHON ENV #
+venv
 *__pycache__*
-.terraform*
-terraform*
+
+# Terraform #
+terraform.tfstate
+terraform.tfstate.backup
+.terraform
+.terraform.lock.hcl
