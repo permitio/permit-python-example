@@ -170,7 +170,7 @@ resource "permitio_role" "admin" {
   key         = "admin"
   name        = "admin"
   description = "Delete any design or comment"
-  permissions = ["design:delete", "comment:delete"]
+  permissions = ["design:create", "design:view", "design:edit", "design:delete", "comment:create", "comment:edit", "comment:delete"]
   depends_on  = [
     permitio_resource.design,
     permitio_resource.comment,
