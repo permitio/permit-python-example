@@ -13,6 +13,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
- 
+  permitio:
+    image: permitio/pdp-v2:latest
+    restart: always
+    environment:
+      - PDP_DEBUG=True
+      - PDP_API_KEY=permit_key_71I3vy7vb8XevK0WB25jg3ZtnItdE6Gtk6yZwC1VTH9QQlZeulAwE4Wfpa0bH9nRAfOMjsrw8PoiiR7PmeQEpK"  # Replace <YOUR_API_KEY> with your actual API key
+    ports:
+      - "7766:7000"
+
 volumes:
   postgres_data:
