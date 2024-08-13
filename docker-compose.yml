@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: zoo
+      POSTGRES_DB: design_app_db
     ports:
       - "5432:5432"
     volumes:
@@ -18,7 +18,7 @@ services:
     restart: always
     environment:
       - PDP_DEBUG=True
-      - PDP_API_KEY=<permit_api_key>"  # Replace <YOUR_API_KEY> with your actual API key
+      - PDP_API_KEY=${PERMIT_API_KEY}
     ports:
       - "7766:7000"
 

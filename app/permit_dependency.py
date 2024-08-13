@@ -1,11 +1,17 @@
 from fastapi import HTTPException, status
 from permit import Permit
+import os
+
+api_key = os.getenv("PERMIT_API_KEY")
+
+if api_key is None:
+    raise ValueError("No API_KEY environment variable set!")
 
 # This line initializes the SDK and connects your python app
 # to the Permit.io PDP container you've set up.
 permit = Permit(
     # your secret API KEY
-    token="<permit_api_key>",
+    token=api_key,
 
     # in production, you might need to change this url to fit your deployment
     # this is the address where you can find the PDP container.
