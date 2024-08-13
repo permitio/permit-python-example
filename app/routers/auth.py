@@ -2,7 +2,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.permit.permit_api import sync_user
+from app.permit.permit_api import sync_user, assign_role
 from app.permit.schemas import AssignRoleData, UserSyncData
 from ..database import schemas, models, crud
 from ..dependencies import get_db
@@ -44,8 +44,15 @@ def sign_in(user: schemas.UserSignIn, db: Session = Depends(get_db)):
     return {"email": db_user.email, "token": fake_jwt_token}
 
 @router.post('/assign-role', tags=['assign-role'], response_model=Any)
-async def assign_role(assignedRoleData: AssignRoleData):
+async def assigned_role_to_user(assignedRoleData: AssignRoleData):
+    print ("hellok")
 
-    roleAssigned = await assign_role(assignedRoleData)
+     # Prepare data for syncing with permit API
+    assigned_role_data : dict = {
+        "user": assignedRoleData.user,
+        "role": assignedRoleData.role
+    }
+
+    roleAssigned = await assign_role(assigned_role_data)
 
     return roleAssigned

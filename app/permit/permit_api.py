@@ -30,6 +30,34 @@ permit = Permit(
     api_timeout=5,
 )
 
+from typing import Optional, Dict, Any
+import permit
+
+async def check_permission(
+    user_key: str,
+    action: str,
+    resource_type: str,
+    tenant: str,
+    user_attributes: Optional[Dict[str, Any]] = None,
+    resource_attributes: Optional[Dict[str, Any]] = None
+) -> Any:
+    # Construct the user dictionary, including attributes only if provided
+    user_dict = {"key": user_key}
+    if user_attributes:
+        user_dict["attributes"] = user_attributes
+
+    # Construct the resource dictionary, including attributes only if provided
+    resource_dict = {
+        "type": resource_type,
+        "tenant": tenant,
+    }
+    if resource_attributes:
+        resource_dict["attributes"] = resource_attributes
+
+    # Call the permit check function with the constructed dictionaries
+    return await permit.check(user_dict, action, resource_dict)
+
+
 
 async def sync_user(data: Dict[str, Any]) -> dict:
     # Validate the input data
@@ -51,8 +79,10 @@ async def assign_role(data: Dict[str,Any]):
     #Validate the input data
     validated_data = AssignRoleData(**data)
 
-    await permit.api.users.assign_role({"role": validated_data.role, "user": validated_data.user })
+    await permit.api.users.assign_role({"role": validated_data.role, "user": validated_data.user, "tenant": 'default' })
 
     return {"message": f"User {validated_data.user} assign to role {validated_data.role} Successfuly."}
+
+
 
 
