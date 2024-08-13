@@ -4,6 +4,7 @@
 # PYTHON ENV #
 venv
 *__pycache__*
+.env
 
 # Terraform #
 terraform.tfstate
