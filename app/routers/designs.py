@@ -1,17 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db
+from app.dependencies import authenticate, get_db
+from app.permit.permit_dependencies import permit_authorize
 
 from ..database import schemas, models, crud
 
-from app.permit_dependency import check_feed_permission
 
 router = APIRouter()
 
 ## Create Design ##
 
-@router.post("/create-design")
+@router.post("/create-design", dependencies=[Depends(authenticate), Depends(permit_authorize)])
 async def create_design(design: schemas.DesignCreate, db: Session = Depends(get_db)):
     db_design= db.query(models.Design).filter(models.Design.user_email == design.user_email and models.Design.title == design.title).first()
 
