@@ -7,9 +7,14 @@ terraform {
   }
 }
 
+variable "permit_api_key" {
+  type = string
+}
+
+
 provider "permitio" {
     api_url = "https://api.permit.io"
-    api_key = "<PERMIT_API_KEY>"
+    api_key = var.permit_api_key
 }
 
 resource "permitio_resource" "design" {
@@ -183,6 +188,7 @@ resource "permitio_condition_set_rule" "allow_editors_to_edit_own_designs" {
   resource_set = permitio_resource_set.own_design.key
   permission   = "design:edit"
   depends_on   = [
+    permitio_role.creator,
     permitio_resource_set.own_design,
   ]
 }
@@ -193,6 +199,7 @@ resource "permitio_condition_set_rule" "allow_editors_to_delete_own_designs" {
   resource_set = permitio_resource_set.own_design.key
   permission   = "design:delete"
   depends_on   = [
+    permitio_role.creator,
     permitio_resource_set.own_design,
   ]
 }
@@ -203,6 +210,7 @@ resource "permitio_condition_set_rule" "allow_viewers_to_edit_own_comments" {
   resource_set = permitio_resource_set.own_comment.key
   permission   = "comment:edit"
   depends_on   = [
+    permitio_role.viewer,
     permitio_resource_set.own_comment,
   ]
 }
@@ -213,6 +221,7 @@ resource "permitio_condition_set_rule" "allow_viewers_to_delete_own_comments" {
   resource_set = permitio_resource_set.own_comment.key
   permission   = "comment:delete"
   depends_on   = [
+    permitio_role.viewer,
     permitio_resource_set.own_comment,
   ]
 }
