@@ -52,12 +52,7 @@ cd terraform && terraform init && terraform plan && terraform apply
 
 go to your project dashboard you should see your policies resources and roles 
 
-
-## Launch FastAPI App
- - Deploy to your docker enviorment db(postgres)and the pdp
- - Create the schema for your app via alembic
- - Create venv enviorment and activate it
- - Run the web server with the command ``` uvicorn app.main:app --reload ```
+ - run ``` docker-compose up -d ``` (deploy the pdp, the db ,and the app)
 
  ## Use The App
  Now it all setup to use our design app!

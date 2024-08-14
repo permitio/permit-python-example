@@ -1,7 +1,26 @@
 version: '3.8'
 
 services:
+
+  fastapi:
+    container_name: web_app
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - CONNECTION_STRING=${CONNECTION_STRING}
+      - ENV=production
+    depends_on:
+      - db
+      - permitio
+    networks:
+      - cutenetwork
+    restart: on-failure:10
+
   db:
+    container_name: db
     image: postgres:latest
     restart: always
     environment:
@@ -12,8 +31,17 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cutenetwork
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
 
   permitio:
+    container_name: permit_pdp
     image: permitio/pdp-v2:latest
     restart: always
     environment:
@@ -24,3 +52,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  cutenetwork:
+    driver: bridge

@@ -34,7 +34,7 @@ async def delete_comment(comment: schemas.CommentDelete, db: Session = Depends(g
         raise HTTPException(status_code=404, detail="Comment not found")
 
     crud.delete_comment(db, comment)
-    return {"message": "Comment deleted successfully"}
+    return comment.id
 
 ## Edit Comment ##
 @router.patch("/{comment_id}", dependencies=[Depends(authenticate), Depends(permit_authorize)])

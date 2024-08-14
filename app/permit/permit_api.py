@@ -66,7 +66,7 @@ async def sync_user(data: Dict[str, Any]) -> dict:
     validated_data = UserSyncData(**data)
 
     # Perform the sync operation
-    await permit.api.users.sync(
+    synced_user = await permit.api.users.sync(
         {
             "key": validated_data.key,
             "email": validated_data.email,
@@ -75,15 +75,15 @@ async def sync_user(data: Dict[str, Any]) -> dict:
             "attributes": validated_data.attributes,
         }
     )
-    return {"message": f"User {validated_data.email} Sync To Permit Successfuly."}
+    return synced_user
 
 async def assign_role(data: Dict[str,Any]):
     #Validate the input data
     validated_data = AssignRoleData(**data)
 
-    await permit.api.users.assign_role({"role": validated_data.role, "user": validated_data.user, "tenant": 'default' })
+    assigned_role = await permit.api.users.assign_role({"role": validated_data.role, "user": validated_data.user, "tenant": 'default' })
 
-    return {"message": f"User {validated_data.user} assign to role {validated_data.role} Successfuly."}
+    return assigned_role
 
 
 

@@ -1,3 +1,4 @@
+import base64
 from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -7,7 +8,7 @@ from . import models, schemas
 ##### USER CRUD OPERATIONS ####
 
 def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
+    fake_hashed_password = base64.b64encode(user.password)
     db_user = models.User(email=user.email, hash_pwd=fake_hashed_password, name=user.name)
     db.add(db_user)
     db.commit()
@@ -34,7 +35,7 @@ def delete_design(db: Session, deleteDesign: schemas.DesignDelete):
     db.delete(design)
     db.commit()
 
-    return {"message": "Design deleted successfully", "design_id": design.id}
+    return design.id
 
 def edit_design(db: Session, design_id: int, new_title: Optional[str] = None, new_description: Optional[str] = None):
     design = db.query(models.Design).filter(models.Design.id == design_id).first()
@@ -50,7 +51,7 @@ def edit_design(db: Session, design_id: int, new_title: Optional[str] = None, ne
     
     db.commit()
 
-    return {"message": "Design updated successfully", "design_id": design_id}
+    return design_id
 
 def view_design(db: Session, design_id: int) -> models.Design: 
     design = db.query(models.Design).filter(models.Design.id == design_id).first() 
@@ -90,7 +91,7 @@ def update_comment(db: Session, editComment: schemas.CommentEdit):
     
     db.commit()
 
-    return {"message": "Design updated successfully", "comment_id": editComment.id}
+    return editComment.id
 
 def view_comment(db: Session, commentBase: schemas.CommentBase) -> models.Design: 
     comment = db.query(models.Comment).filter(models.Comment.id == commentBase.id).first() 

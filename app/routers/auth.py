@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.permit.permit_api import sync_user, assign_role
-from app.permit.schemas import AssignRoleData, UserSyncData
+from app.permit.schemas import AssignRoleData
 from ..database import schemas, models, crud
 from ..dependencies import get_db
 
@@ -12,7 +12,7 @@ router = APIRouter(
     tags=["auth"]
 )
 
-@router.post("/signup/",tags=["signup"], response_model=schemas.User)
+@router.post("/signup",tags=["signup"], response_model=schemas.User)
 async def create_user_route(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
@@ -28,7 +28,7 @@ async def create_user_route(user: schemas.UserCreate, db: Session = Depends(get_
     }
     
     # Sync user with permit API
-    permit_sync_user = await sync_user(user_data)
+    await sync_user(user_data)
 
     return crud.create_user(db=db, user=user)
 

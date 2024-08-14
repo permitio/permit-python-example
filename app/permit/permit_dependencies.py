@@ -43,3 +43,4 @@ async def permit_authorize(request: Request, token: str = Depends(token_auth_sch
 
     if not allowed:
         raise HTTPException(status_code=403, detail="Not authorized")
+    

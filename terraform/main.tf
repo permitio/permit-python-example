@@ -26,9 +26,9 @@ resource "permitio_resource" "design" {
         "name" = "create",
         "description" = "create a design"
     },
-    "view" = {
-        "name" = "view",
-        "description" = "view a design",
+    "read" = {
+        "name" = "read",
+        "description" = "read a design",
     },
     "edit" = {
         "name" = "edit",
@@ -150,11 +150,11 @@ resource "permitio_role_derivation" "design_creator_comment_moderator" {
   ]
 }
 
-resource "permitio_role" "viewer" {
-  key         = "viewer"
-  name        = "viewer"
-  description = "view and comment on all designs"
-  permissions = ["design:view", "comment:create"]
+resource "permitio_role" "reader" {
+  key         = "reader"
+  name        = "reader"
+  description = "read and comment on all designs"
+  permissions = ["design:read", "comment:create"]
   depends_on  = [
     permitio_resource.design,
     permitio_resource.comment,
@@ -165,18 +165,18 @@ resource "permitio_role" "creator" {
   key         = "creator"
   name        = "creator"
   description = "Create designs, edit and delete them, and delete comments on them"
-  permissions = ["design:view", "design:create", "comment:create"]
+  permissions = ["design:read", "design:create", "comment:create"]
   depends_on  = [
     permitio_resource.comment,
     permitio_resource.design
   ]
 }
 
-resource "permitio_role" "admin" {
-  key         = "admin"
-  name        = "admin"
+resource "permitio_role" "manager" {
+  key         = "manager"
+  name        = "manager"
   description = "Delete any design or comment"
-  permissions = ["design:create", "design:view", "design:edit", "design:delete", "comment:create", "comment:edit", "comment:delete"]
+  permissions = ["design:create", "design:read", "design:edit", "design:delete", "comment:create", "comment:edit", "comment:delete"]
   depends_on  = [
     permitio_resource.design,
     permitio_resource.comment,
@@ -203,9 +203,9 @@ resource "permitio_condition_set_rule" "allow_editors_to_delete_own_designs" {
   ]
 }
 
-// Give 'viewer' role permissions to 'own_comment:edit'
-resource "permitio_condition_set_rule" "allow_viewers_to_edit_own_comments" {
-  user_set     = permitio_role.viewer.key
+// Give 'reader' role permissions to 'own_comment:edit'
+resource "permitio_condition_set_rule" "allow_readers_to_edit_own_comments" {
+  user_set     = permitio_role.reader.key
   resource_set = permitio_resource_set.own_comment.key
   permission   = "comment:edit"
   depends_on   = [
@@ -213,9 +213,9 @@ resource "permitio_condition_set_rule" "allow_viewers_to_edit_own_comments" {
   ]
 }
 
-// Give 'viewer' role permissions to 'own_comment:delete'
-resource "permitio_condition_set_rule" "allow_viewers_to_delete_own_comments" {
-  user_set     = permitio_role.viewer.key
+// Give 'reader' role permissions to 'own_comment:delete'
+resource "permitio_condition_set_rule" "allow_readers_to_delete_own_comments" {
+  user_set     = permitio_role.reader.key
   resource_set = permitio_resource_set.own_comment.key
   permission   = "comment:delete"
   depends_on   = [

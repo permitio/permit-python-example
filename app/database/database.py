@@ -2,9 +2,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost/design_app_db"
+import os
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+from dotenv import load_dotenv
+
+load_dotenv()
+
+connection_string = os.getenv("CONNECTION_STRING")
+
+engine = create_engine(connection_string)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
