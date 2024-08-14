@@ -57,7 +57,7 @@ class CommentBase(BaseModel):
 class CommentCreate(BaseModel):
     content: str
     design_id: int
-    user_email: int
+    user_email: str
 
 class CommentDelete(CommentBase):
     pass

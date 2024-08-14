@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from permit import UserRead, Permit
+from permit import Permit
 from typing import Any, Dict
 import os
 
@@ -31,13 +31,12 @@ permit = Permit(
 )
 
 from typing import Optional, Dict, Any
-import permit
 
 async def check_permission(
     user_key: str,
     action: str,
     resource_type: str,
-    tenant: str,
+    tenant: Optional[str]  = 'default', 
     user_attributes: Optional[Dict[str, Any]] = None,
     resource_attributes: Optional[Dict[str, Any]] = None
 ) -> Any:
@@ -49,13 +48,16 @@ async def check_permission(
     # Construct the resource dictionary, including attributes only if provided
     resource_dict = {
         "type": resource_type,
+        "attributes": {
+            "author": user_key,
+        },
         "tenant": tenant,
     }
     if resource_attributes:
         resource_dict["attributes"] = resource_attributes
 
     # Call the permit check function with the constructed dictionaries
-    return await permit.check(user_dict, action, resource_dict)
+    return await permit.check(user_key, action, resource_dict)
 
 
 

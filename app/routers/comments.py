@@ -1,14 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db
+from app.dependencies import authenticate, get_db
+from app.permit.permit_dependencies import permit_authorize
 from ..database import schemas, models, crud
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/comment",
+    tags=["comment"]
+)
 
 ## Create Comment ##
-@router.post("/create-comment")
+@router.post("", dependencies=[Depends(authenticate), Depends(permit_authorize)])
 async def create_comment(comment: schemas.CommentCreate, db: Session = Depends(get_db)):
+    print("hello again")
     db_comment = db.query(models.Comment).filter(
         models.Comment.user_email == comment.user_email,
         models.Comment.design_id == comment.design_id,
@@ -21,7 +26,7 @@ async def create_comment(comment: schemas.CommentCreate, db: Session = Depends(g
     return crud.create_comment(db, comment)
 
 ## Delete Comment ##
-@router.delete("/delete-comment")
+@router.delete("/{comment_id}", dependencies=[Depends(authenticate), Depends(permit_authorize)])
 async def delete_comment(comment: schemas.CommentDelete, db: Session = Depends(get_db)):
     db_comment = db.query(models.Comment).filter(models.Comment.id == comment.id).first()
     
@@ -32,7 +37,7 @@ async def delete_comment(comment: schemas.CommentDelete, db: Session = Depends(g
     return {"message": "Comment deleted successfully"}
 
 ## Edit Comment ##
-@router.patch("/edit-comment")
+@router.patch("/{comment_id}", dependencies=[Depends(authenticate), Depends(permit_authorize)])
 async def edit_comment(comment: schemas.CommentEdit, db: Session = Depends(get_db)):
     db_comment = db.query(models.Comment).filter(models.Comment.id == comment.id).first()
     
@@ -42,7 +47,7 @@ async def edit_comment(comment: schemas.CommentEdit, db: Session = Depends(get_d
     return crud.update_comment(db, comment)
 
 ## View Comment ##
-@router.get("/view-comment/{comment_id}", response_model=schemas.CommentView)
+@router.get("/{comment_id}", response_model=schemas.CommentView, dependencies=[Depends(authenticate), Depends(permit_authorize)])
 async def view_comment(comment_id: int, db: Session = Depends(get_db)):
     db_comment = db.query(models.Comment).filter(models.Comment.id == comment_id).first()
     

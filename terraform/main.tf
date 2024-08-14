@@ -165,9 +165,10 @@ resource "permitio_role" "creator" {
   key         = "creator"
   name        = "creator"
   description = "Create designs, edit and delete them, and delete comments on them"
-  permissions = ["design:view", "design:create"]
+  permissions = ["design:view", "design:create", "comment:create"]
   depends_on  = [
-    permitio_resource.design,
+    permitio_resource.comment,
+    permitio_resource.design
   ]
 }
 
@@ -221,6 +222,18 @@ resource "permitio_condition_set_rule" "allow_viewers_to_delete_own_comments" {
     permitio_resource_set.own_comment,
   ]
 }
+
+// Give 'creator' role permissions to 'own_comment:delete'
+resource "permitio_condition_set_rule" "allow_creators_to_delete_own_comments" {
+  user_set     = permitio_role.creator.key
+  resource_set = permitio_resource_set.own_comment.key
+  permission   = "comment:delete"
+  depends_on   = [
+    permitio_resource_set.own_comment,
+  ]
+}
+
+
 
 
 

@@ -62,38 +62,50 @@ go to your project dashboard you should see your policies resources and roles
  ## Use The App
  Now it all setup to use our design app!
 
- - Signup  new user
- - Signin (get fake jwt for the demonstration)
- - use the set_role route and add add to the user a creator role.
- - use the create_design route and pass the user details
- - use the create_comment route and create comment on that    design
- - Signup  new user
- - Signin (get fake jwt for the demonstration)
- - use the set_role route and add to the user a viewer role.
- - try to delete the design of user CreatorUser with the email of ViewerUser - it should be rejected.
+ open [swagger](http://127.0.0.1:8000/docs)
 
+ - Signup a new user with the email **viewer@gmail.com** using the [sign up request](http://127.0.0.1:8000/docs#/auth/create_user_route_auth_signup__post)
 
-
-
-## The App Stack
-    - Web Server 
- Web Server
-    permit
-    fastapi
-    sqlalchemy
-    uvicorn
-    pydantic
-    alemcib
-
-    Database
-
-    postgresql
-    pdp
-
-    terraform
-
+ - Assign **viewer** role to the user using [assigned role request](http://127.0.0.1:8000/docs#/auth/assigned_role_to_user_auth_assign_role_post)
     
-## Init
-    install venv 
+- paste it to the request body 
+   ```
+  {   
+    "user":"user|viewer@gmail.com",
+    "role": "viewer"
+  }
+    ```
+ ### Lets try to create new design when we signed as viewer 
+ - Signin (In the swagger page press on the authorized button and paste the user email)
+ - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
+ #### We get an 403 status with the message Not authorized 🔒
+
+ ### Now Lets create new user but now with **creator** permissions
+
+  - Signup a new user with the email **creator@gmail.com** using the [sign up request](http://127.0.0.1:8000/docs#/auth/create_user_route_auth_signup__post)
+
+ - Assign **creator** role to the user using [assigned role request](http://127.0.0.1:8000/docs#/auth/assigned_role_to_user_auth_assign_role_post)
+    
+- paste it to the request body 
+   ```
+  {   
+    "user":"user|creator@gmail.com",
+    "role": "creator"
+  }
+    ```
+ ### Lets try to create new design when we signed as viewer 
+ - Signin (In the swagger page press on the authorized button and paste the user email)
+ - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
+ - The design should be created
+ - Lets comment on the design with creator user
+
+ ## Abac case 
+ - Now we are going to delete the comment the creator just write  
+ 
+ ## Rebac case 
+ - Now lets create new user with permissions of admin 
+ - Lets try to delete the design we created before using the creator user
+ 
+
     
 

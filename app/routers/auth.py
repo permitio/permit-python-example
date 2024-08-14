@@ -20,15 +20,15 @@ async def create_user_route(user: schemas.UserCreate, db: Session = Depends(get_
     
     # Prepare data for syncing with permit API
     user_data: dict = {
-        "key": 'user|892179821739812389327',
-        "email": 'jhonCohen@gmail.com',
-        "first_name": 'john',
-        "last_name": 'cohen',
+        "key": user.email,
+        "email": user.email,
+        "first_name": user.name,
+        "last_name": '-',
         "attributes": {},
     }
     
     # Sync user with permit API
-    await sync_user(user_data)
+    permit_sync_user = await sync_user(user_data)
 
     return crud.create_user(db=db, user=user)
 
@@ -45,8 +45,7 @@ def sign_in(user: schemas.UserSignIn, db: Session = Depends(get_db)):
 
 @router.post('/assign-role', tags=['assign-role'], response_model=Any)
 async def assigned_role_to_user(assignedRoleData: AssignRoleData):
-    print ("hellok")
-
+  
      # Prepare data for syncing with permit API
     assigned_role_data : dict = {
         "user": assignedRoleData.user,
