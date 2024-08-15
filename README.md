@@ -40,6 +40,7 @@ set his authority
   ```
 
 go to your project dashboard you should see your policies resources and roles.
+![Alt text](assets/policy-editor.png)
 
 ### Launch the FastAPI app
 
@@ -48,7 +49,12 @@ go to your project dashboard you should see your policies resources and roles.
   PERMIT_API_KEY=<API_KEY_HERE>
   CONNECTION_STRING=<CONNECTION_STRING>
   ```
-  add example for the user
+
+  for example 
+  ```
+  PERMIT_API_KEY=permit_key_xxxxxx
+  CONNECTION_STRING=postgresql+asyncpg://postgres:postgres@db/design_app_db
+  ```
  - run ``` docker-compose up -d ``` (deploy the pdp, the db ,and the app)
 
  ## Use The App
@@ -72,6 +78,7 @@ go to your project dashboard you should see your policies resources and roles.
 
  ### Lets try to create new design when we signed as reader 
  - Signin (In the swagger page press on the authorized button and paste the user email)
+ ![Alt text](assets/auth-button.png)
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
  #### We get an 403 status with the message Not authorized 🔒
 
@@ -88,7 +95,6 @@ go to your project dashboard you should see your policies resources and roles.
     "role": "creator"
   }
     ```
-
 
  ### Lets try to create new design when we signed as creator 
  - Signin (In the swagger page press on the authorized button and paste the user email)
