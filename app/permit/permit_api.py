@@ -1,13 +1,13 @@
-from fastapi import HTTPException, status
 from permit import Permit
 from typing import Any, Dict
 import os
 
 from dotenv import load_dotenv
 
+from app.routers.auth.schema import PermitRoleAssignmentCreate, PermitUserCreate
+
 load_dotenv()
 
-from app.permit.schemas import AssignRoleData, UserSyncData
 
 api_key = os.getenv("PERMIT_API_KEY")
 
@@ -63,7 +63,7 @@ async def check_permission(
 
 async def sync_user(data: Dict[str, Any]) -> dict:
     # Validate the input data
-    validated_data = UserSyncData(**data)
+    validated_data = PermitUserCreate(**data)
 
     # Perform the sync operation
     synced_user = await permit.api.users.sync(
@@ -79,7 +79,7 @@ async def sync_user(data: Dict[str, Any]) -> dict:
 
 async def assign_role(data: Dict[str,Any]):
     #Validate the input data
-    validated_data = AssignRoleData(**data)
+    validated_data = PermitRoleAssignmentCreate(**data)
 
     assigned_role = await permit.api.users.assign_role({"role": validated_data.role, "user": validated_data.user, "tenant": 'default' })
 

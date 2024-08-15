@@ -1,25 +1,24 @@
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-
+from app.database.database import get_db_session
 from app.permit.permit_api import sync_user, assign_role
-from app.permit.schemas import AssignRoleData
-from ..database import schemas, models, crud
-from ..dependencies import get_db
+from app.database import  models, crud
+from app.routers.auth.schema import PermitRoleAssignmentCreate, PermitRoleAssignmentRead, PermitUserCreate, UserCreate
 
 router = APIRouter(
     prefix="/auth",
     tags=["auth"]
 )
 
-@router.post("/signup",tags=["signup"], response_model=schemas.User)
-async def create_user_route(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
+@router.post("/signup",tags=["signup"], response_model= None)
+async def create_user_route(user: UserCreate, db_session = Depends(get_db_session)):
+    db_user = await crud.get_user(db_session, user)
+
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # Prepare data for syncing with permit API
-    user_data: dict = {
+    user_data: PermitUserCreate = {
         "key": user.email,
         "email": user.email,
         "first_name": user.name,
@@ -30,10 +29,10 @@ async def create_user_route(user: schemas.UserCreate, db: Session = Depends(get_
     # Sync user with permit API
     await sync_user(user_data)
 
-    return crud.create_user(db=db, user=user)
+    return await crud.create_user(db=db_session, user=user)
 
-@router.post("/signin",tags=["signin"], response_model=schemas.UserSignInResponse)
-def sign_in(user: schemas.UserSignIn, db: Session = Depends(get_db)):
+@router.post("/signin",tags=["signin"], response_model=PermitRoleAssignmentCreate)
+def sign_in(user: Any,  db_session = Depends(get_db_session)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if not db_user or not db_user.hash_pwd == user.password + "notreallyhashed":
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -43,15 +42,15 @@ def sign_in(user: schemas.UserSignIn, db: Session = Depends(get_db)):
     
     return {"email": db_user.email, "token": fake_jwt_token}
 
-@router.post('/assign-role', tags=['assign-role'], response_model=Any)
-async def assigned_role_to_user(assignedRoleData: AssignRoleData):
+@router.post('/assign-role', tags=['assign-role'], response_model=PermitRoleAssignmentRead)
+async def assigned_role_to_user(assignedRoleData: PermitRoleAssignmentCreate):
   
      # Prepare data for syncing with permit API
-    assigned_role_data : dict = {
+    assigned_role_data : PermitRoleAssignmentCreate = {
         "user": assignedRoleData.user,
         "role": assignedRoleData.role
     }
 
     roleAssigned = await assign_role(assigned_role_data)
 
-    return roleAssigned
+    return PermitRoleAssignmentCreate(roleAssigned)

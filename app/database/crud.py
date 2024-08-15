@@ -1,44 +1,66 @@
 import base64
-from typing import Optional
+from typing import Any, Optional
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
-from . import models, schemas
+from app.routers.comments.schemas import CommentBase, CommentCreate, CommentDelete, CommentEdit
+from app.routers.designs.schemas import DesignCreate, DesignDelete
+
+from app.database.models import User, Design, Comment
 
 ##### USER CRUD OPERATIONS ####
 
-def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = base64.b64encode(user.password)
-    db_user = models.User(email=user.email, hash_pwd=fake_hashed_password, name=user.name)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+
+
+
+async def get_user(db_session: AsyncSession, user: Any) -> User:
+     # Construct a query to find a user by email
+    # statement = select(User).where(User.email == user.email)
+    db_user = (await db_session.scalars(select(User).where(User.email == user.email))).first()
+
+    # Execute the query
+    # result = await db.execute(select(User))
+    
+    # Fetch the first result
+    # db_user = result.scalars().first()
+    
+    return db_user 
+
+async def create_user(db: AsyncSession, user: Any):
+    fake_hashed_password = base64.b64encode(user.password.encode()).decode()  # Ensure password is encoded and decoded correctly
+    db_user = User(email=user.email, hash_pwd=fake_hashed_password, name=user.name)
+    await db.add(db_user)
+    await db.commit()
+    await db.refresh(db_user)
     return db_user
 
 ##### DESIGN CRUD OPERATIONS ####
 
-def create_design(db: Session, design: schemas.DesignCreate):
-    db_design = models.Design(user_email=design.user_email, title=design.title, description=design.description)
+async def create_design(db: AsyncSession, design: DesignCreate) -> Design:
+    db_design = Design(user_email=design.user_email, title=design.title, description=design.description)
     db.add(db_design)
-    db.commit()
-    db.refresh(db_design)
+    await db.commit()
+    await db.refresh(db_design)
 
-    return {"message": "Design created successfully", "design_id": db_design.id}
+    return db_design
 
-def delete_design(db: Session, deleteDesign: schemas.DesignDelete):
-    design = db.query(models.Design).filter(models.Design.id == deleteDesign.id).first()
+async def delete_design(db: AsyncSession, deleteDesign: DesignDelete) -> int:
+    result = await db.execute(select(Design).filter(Design.id == deleteDesign.id))
+    design = result.scalars().first()
 
     if not design:
         # Handle the case where the design does not exist
         raise HTTPException(status_code=404, detail="Design not found")
     
-    db.delete(design)
-    db.commit()
+    await db.delete(design)
+    await db.commit()
 
     return design.id
 
-def edit_design(db: Session, design_id: int, new_title: Optional[str] = None, new_description: Optional[str] = None):
-    design = db.query(models.Design).filter(models.Design.id == design_id).first()
+async def edit_design(db: AsyncSession, design_id: int, new_title: Optional[str] = None, new_description: Optional[str] = None):
+    result = await db.execute(select(Design).filter(Design.id == design_id))
+    design = result.scalars().first()
     
     if design is None:
         # Raise an exception if the design does not exist
@@ -49,58 +71,58 @@ def edit_design(db: Session, design_id: int, new_title: Optional[str] = None, ne
     if new_description is not None:
         design.description = new_description
     
-    db.commit()
+    await db.commit()
 
     return design_id
 
-def view_design(db: Session, design_id: int) -> models.Design: 
-    design = db.query(models.Design).filter(models.Design.id == design_id).first() 
+async def view_design(db: AsyncSession, design_id: int) -> Design: 
+    result = await db.execute(select(Design).filter(Design.id == design_id))
+    design = result.scalars().first()
 
     if design is None:
-        raise HTTPException(status_cide=404, detail="Design not found")
+        raise HTTPException(status_code=404, detail="Design not found")
     
     return design
 
-##### DESIGN COMMIT OPERATIONS ####
+##### COMMENT CRUD OPERATIONS ####
 
-def create_comment(db: Session, comment: schemas.CommentCreate):
-    db_comment = models.Comment(user_email=comment.user_email, design_id=comment.design_id, content=comment.content)
+async def create_comment(db: AsyncSession, comment: CommentCreate):
+    db_comment = Comment(user_email=comment.user_email, design_id=comment.design_id, content=comment.content)
     db.add(db_comment)
-    db.commit()
-    db.refresh(db_comment)
+    await db.commit()
+    await db.refresh(db_comment)
     return db_comment
 
-def delete_comment(db: Session, comment: schemas.CommentDelete):
-    comment = db.query(models.Comment).filter(models.Comment.id == comment.id).first()
+async def delete_comment(db: AsyncSession, comment: CommentDelete):
+    result = await db.execute(select(Comment).filter(Comment.id == comment.id))
+    comment = result.scalars().first()
 
-    if not comment :
-        # Handle the case where the design does not exist
-        raise HTTPException(status_code=404, detail="Design not found")
+    if not comment:
+        # Handle the case where the comment does not exist
+        raise HTTPException(status_code=404, detail="Comment not found")
     
-    db.delete(comment)
-    db.commit()
+    await db.delete(comment)
+    await db.commit()
 
-def update_comment(db: Session, editComment: schemas.CommentEdit):
-    comment = db.query(models.Comment).filter(models.Comment.id == editComment.id).first()
+async def update_comment(db: AsyncSession, editComment: CommentEdit):
+    result = await db.execute(select(Comment).filter(Comment.id == editComment.id))
+    comment = result.scalars().first()
     
     if comment is None:
-        # Raise an exception if the design does not exist
-        raise HTTPException(status_code=404, detail="Design not found")
+        # Raise an exception if the comment does not exist
+        raise HTTPException(status_code=404, detail="Comment not found")
     
     comment.content = editComment.content
     
-    db.commit()
+    await db.commit()
 
     return editComment.id
 
-def view_comment(db: Session, commentBase: schemas.CommentBase) -> models.Design: 
-    comment = db.query(models.Comment).filter(models.Comment.id == commentBase.id).first() 
+async def view_comment(db: AsyncSession, commentBase: CommentBase) -> Comment: 
+    result = await db.execute(select(Comment).filter(Comment.id == commentBase.id))
+    comment = result.scalars().first()
 
     if comment is None:
-        raise HTTPException(status_cide=404, detail="Design not found")
+        raise HTTPException(status_code=404, detail="Comment not found")
     
     return comment
-
-
-
-

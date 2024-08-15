@@ -4,14 +4,13 @@
 
 # Permit Python With FastAPI Example
 
-
 The app demonstrate a design collaboration app
 for users to share designs(like figma) and comment on them. the app policy will be enforce by permit. there are 3 types of users.
-viewer, editor, and admin.
+reader, editor, and manager.
 
-- **Viewer** can only view design and comments on design, he can delete and edit his own comments.
+- **Reader** can only view design and comments on design, he can delete and edit his own comments.
 - **Creator** can create and edit,delete his own designs ,but not others users, he can comment on his design. and other design but can only delete his own comments.
-- **Admin** allow to create, edit, delete designs and comments of other users.
+- **Manager** allow to create, edit, delete designs and comments of other users.
 
 The app enable to signup a user, and expose route to sync user to permit system to 
 set his authority 
@@ -26,32 +25,29 @@ set his authority
 
 ## Permit Prerequisities
 - Signup to permit.io create your first project and grab your **api key** 
-    <video width="320" height="240" controls>
-  <source src="upload after commit .webm" type="video/webm">
-  Your browser does not support the video tag.
-</video>
-
+ 
 ### Ok, lets start with the fun 🐶
 
-## Set App Permit Policy Using permit-terraform-provider
+## Setup
+### Set App Permit Policy Using permit-terraform-provider
+- load env variables to the shell
 
-- Paste the api key to the .env file 
-```
-PERMIT_API_KEY=<API_KEY_HERE>
-TF_VAR_permit_api_key=<API_KEY_HERE>
-```
-- Load the variables into your shell
-```
-source .env
-```
-- Applying terraform plan
-```
-cd terraform && terraform init && terraform plan && terraform apply
-```
-- write yes in the command line and press enter
+  ``` export TF_VAR_permit_api_key=<PERMIT_API_KEY> ```
 
-go to your project dashboard you should see your policies resources and roles 
+- Applying the terraform plan
+  ```
+  cd terraform && terraform init && terraform plan && terraform apply -auto-approve
+  ```
 
+go to your project dashboard you should see your policies resources and roles.
+
+### Launch the FastAPI app
+
+- Create .env file(look at .env.dev) and paste the api key to the .env file 
+  ```
+  PERMIT_API_KEY=<API_KEY_HERE>
+  CONNECTION_STRING=<CONNECTION_STRING>
+  ```
  - run ``` docker-compose up -d ``` (deploy the pdp, the db ,and the app)
 
  ## Use The App
@@ -59,18 +55,18 @@ go to your project dashboard you should see your policies resources and roles
 
  open [swagger](http://127.0.0.1:8000/docs)
 
- - Signup a new user with the email **viewer@gmail.com** using the [sign up request](http://127.0.0.1:8000/docs#/auth/create_user_route_auth_signup__post)
+ - Signup a new user with the email **reader@gmail.com** using the [sign up request](http://127.0.0.1:8000/docs#/auth/create_user_route_auth_signup__post)
 
- - Assign **viewer** role to the user using [assigned role request](http://127.0.0.1:8000/docs#/auth/assigned_role_to_user_auth_assign_role_post)
+ - Assign **reader** role to the user using [assigned role request](http://127.0.0.1:8000/docs#/auth/assigned_role_to_user_auth_assign_role_post)
     
 - paste it to the request body 
    ```
   {   
-    "user":"user|viewer@gmail.com",
-    "role": "viewer"
+    "user":"reader@gmail.com",
+    "role": "reader"
   }
     ```
- ### Lets try to create new design when we signed as viewer 
+ ### Lets try to create new design when we signed as reader 
  - Signin (In the swagger page press on the authorized button and paste the user email)
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
  #### We get an 403 status with the message Not authorized 🔒
@@ -88,7 +84,7 @@ go to your project dashboard you should see your policies resources and roles
     "role": "creator"
   }
     ```
- ### Lets try to create new design when we signed as viewer 
+ ### Lets try to create new design when we signed as reader 
  - Signin (In the swagger page press on the authorized button and paste the user email)
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
  - The design should be created
@@ -98,7 +94,7 @@ go to your project dashboard you should see your policies resources and roles
  - Now we are going to delete the comment the creator just write  
  
  ## Rebac case 
- - Now lets create new user with permissions of admin 
+ - Now lets create new user with permissions of manager 
  - Lets try to delete the design we created before using the creator user
  
 
