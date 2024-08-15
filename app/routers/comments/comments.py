@@ -18,8 +18,8 @@ RESOURCE_NAME = 'comment'
 
 
 ## Create Comment ##
-@router.post("", dependencies=[Depends(authenticate)], response_model=CommentCreate)
-async def create_comment(comment: CommentCreate, db_session = Depends(get_db_session)):
+@router.post("", dependencies=[Depends(authenticate)], response_model=Comment)
+async def create_comment(comment: Comment, db_session = Depends(get_db_session)):
     
     allowed = await permit.check(comment.user_email, 'create' , RESOURCE_NAME)
 
@@ -39,14 +39,14 @@ async def create_comment(comment: CommentCreate, db_session = Depends(get_db_ses
 
     created_comment = await crud.create_comment(db_session, comment)
 
-    return  CommentCreate (
+    return Comment(
         content=created_comment.content,
         design_id=created_comment.design_id,
         user_email=created_comment.user_email
     )
 
 ## Delete Comment ##
-@router.delete("/{comment_id}", response_model=int)
+@router.delete("/{comment_id}", response_model=Comment)
 async def delete_comment(comment: CommentDelete, user = Depends(authenticate), db_session = Depends(get_db_session)):
 
     allowed = await permit.check(user, 'delete', RESOURCE_NAME)
@@ -61,7 +61,12 @@ async def delete_comment(comment: CommentDelete, user = Depends(authenticate), d
 
     deleted_comment = await crud.delete_comment(db_session, comment)
 
-    return comment.id
+    return Comment(
+        content=deleted_comment.content,
+        design_id=deleted_comment.design_id,
+        user_email=deleted_comment.user_email
+    )
+
 
 ## Edit Comment ##
 @router.patch("/{comment_id}")

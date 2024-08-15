@@ -3,7 +3,7 @@ from typing import Any, Optional
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.routers.comments.schemas import CommentBase, CommentCreate, CommentDelete, CommentEdit
+from app.routers.comments.schemas import CommentBase, Comment, CommentDelete, CommentEdit
 from app.routers.designs.schemas import DesignCreate, DesignDelete
 from app.database.models import User, Design, Comment
 
@@ -78,14 +78,14 @@ async def view_design(db_session: AsyncSession, design_id: int) -> Design:
 
 ##### COMMENT CRUD OPERATIONS ####
 
-async def create_comment(db_session: AsyncSession, comment: CommentCreate):
+async def create_comment(db_session: AsyncSession, comment: Comment):
     db_comment = Comment(user_email=comment.user_email, design_id=comment.design_id, content=comment.content)
     db_session.add(db_comment)
     await db_session.commit()
     await db_session.refresh(db_comment)
     return db_comment
 
-async def delete_comment(db_session: AsyncSession, comment: CommentDelete):
+async def delete_comment(db_session: AsyncSession, comment: CommentDelete) -> Comment :
     result = await db_session.execute(select(Comment).filter(Comment.id == comment.id))
     comment = result.scalars().first()
 
@@ -95,6 +95,8 @@ async def delete_comment(db_session: AsyncSession, comment: CommentDelete):
     
     await db_session.delete(comment)
     await db_session.commit()
+
+    return comment
 
 async def update_comment(db_session: AsyncSession, editComment: CommentEdit):
     result = await db_session.execute(select(Comment).filter(Comment.id == editComment.id))
