@@ -1,10 +1,9 @@
 from permit import Permit
 from typing import Any, Dict
-import os
-
 from dotenv import load_dotenv
+from permit.api.models import RoleAssignmentCreate, UserCreate, UserRead, RoleAssignmentRead
 
-from app.routers.auth.schema import PermitRoleAssignmentCreate, PermitUserCreate
+import os
 
 load_dotenv()
 
@@ -61,27 +60,14 @@ async def check_permission(
 
 
 
-async def sync_user(data: Dict[str, Any]) -> dict:
-    # Validate the input data
-    validated_data = PermitUserCreate(**data)
-
-    # Perform the sync operation
-    synced_user = await permit.api.users.sync(
-        {
-            "key": validated_data.key,
-            "email": validated_data.email,
-            "first_name": validated_data.first_name,
-            "last_name": validated_data.last_name,
-            "attributes": validated_data.attributes,
-        }
-    )
+async def sync_user(data: UserCreate) -> UserRead:
+  
+    synced_user = await permit.api.users.sync(data)
     return synced_user
 
-async def assign_role(data: Dict[str,Any]):
-    #Validate the input data
-    validated_data = PermitRoleAssignmentCreate(**data)
+async def assign_role(data: RoleAssignmentCreate) -> RoleAssignmentRead:
 
-    assigned_role = await permit.api.users.assign_role({"role": validated_data.role, "user": validated_data.user, "tenant": 'default' })
+    assigned_role = await permit.api.users.assign_role(data)
 
     return assigned_role
 
