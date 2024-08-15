@@ -1,10 +1,13 @@
-from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException
 from app.database.database import get_db_session
-from app.dependencies import DBSessionDep, authenticate
-from app.database import models, crud
+from app.dependencies import authenticate
+from app.database import crud
+from app.database.models import Comment
 from app.permit.permit_api import permit
 from app.routers.comments.schemas import CommentCreate, CommentDelete, CommentEdit, CommentView
+from sqlalchemy.future import select
+
 
 router = APIRouter(
     prefix="/comment",
@@ -18,16 +21,19 @@ RESOURCE_NAME = 'comment'
 @router.post("", dependencies=[Depends(authenticate)])
 async def create_comment(comment: CommentCreate, db_session = Depends(get_db_session)):
     
-    allowed = await permit.check('m', 'create' , RESOURCE_NAME)
+    allowed = await permit.check(comment.user_email, 'create' , RESOURCE_NAME)
 
     if not allowed:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    db_comment = db_session.query(models.Comment).filter(
-        models.Comment.user_email == comment.user_email,
-        models.Comment.design_id == comment.design_id,
-        models.Comment.content == comment.content
-    ).first()
+   
+
+    db_comment = (await db_session.execute(
+    select(Comment).where(
+        Comment.user_email == comment.user_email,
+        Comment.design_id == comment.design_id,
+        Comment.content == comment.content
+    ))).scalars().first()
 
     if db_comment:
         raise HTTPException(status_code=400, detail="Comment already exists")
@@ -35,15 +41,15 @@ async def create_comment(comment: CommentCreate, db_session = Depends(get_db_ses
     return crud.create_comment(db_session, comment)
 
 ## Delete Comment ##
-@router.delete("/{comment_id}", dependencies=[Depends(authenticate)], response_model=int)
-async def delete_comment(comment: CommentDelete, db_session = Depends(get_db_session)):
+@router.delete("/{comment_id}", response_model=int)
+async def delete_comment(comment: CommentDelete, user = Depends(authenticate), db_session = Depends(get_db_session)):
 
-    allowed = await permit.check('m', 'delete', RESOURCE_NAME)
+    allowed = await permit.check(user, 'delete', RESOURCE_NAME)
 
     if not allowed:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    db_comment = db_session.query(models.Comment).filter(models.Comment.id == comment.id).first()
+    db_comment = db_session.query(Comment).filter(Comment.id == comment.id).first()
     
     if not db_comment:
         raise HTTPException(status_code=404, detail="Comment not found")
@@ -53,15 +59,15 @@ async def delete_comment(comment: CommentDelete, db_session = Depends(get_db_ses
     return comment.id
 
 ## Edit Comment ##
-@router.patch("/{comment_id}", dependencies=[Depends(authenticate)])
-async def edit_comment(comment: CommentEdit, db_session = Depends(get_db_session)):
+@router.patch("/{comment_id}")
+async def edit_comment(comment: CommentEdit,user = Depends(authenticate), db_session = Depends(get_db_session)):
 
-    allowed = await permit.check('m', 'edit', RESOURCE_NAME)
+    allowed = await permit.check(user, 'edit', RESOURCE_NAME)
 
     if not allowed:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    db_comment = db_session.query(models.Comment).filter(models.Comment.id == comment.id).first()
+    db_comment = db_session.query(Comment).filter(Comment.id == comment.id).first()
     
     if not db_comment:
         raise HTTPException(status_code=404, detail="Comment not found")
@@ -71,15 +77,15 @@ async def edit_comment(comment: CommentEdit, db_session = Depends(get_db_session
     return updated_comment
 
 ## View Comment ##
-@router.get("/{comment_id}", response_model = CommentView, dependencies=[Depends(authenticate)])
-async def view_comment(comment_id: int, db_session = Depends(get_db_session)):
+@router.get("/{comment_id}", response_model = CommentView)
+async def view_comment(comment_id: int, user = Depends(authenticate), db_session = Depends(get_db_session)):
 
-    allowed = await permit.check('m', 'view', RESOURCE_NAME)
+    allowed = await permit.check(user, 'view', RESOURCE_NAME)
 
     if not allowed:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    db_comment = db_session.query(models.Comment).filter(models.Comment.id == comment_id).first()
+    db_comment = db_session.query(Comment).filter(Comment.id == comment_id).first()
     
     if not db_comment:
         raise HTTPException(status_code=404, detail="Comment not found")

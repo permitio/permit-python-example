@@ -99,7 +99,6 @@ resource "permitio_resource_set" "own_comment" {
   ]
 }
 
-// Rebac Role blocks.
 
 resource "permitio_relation" "design_comment_relation" {
   key              = "parent"
@@ -232,6 +231,8 @@ resource "permitio_condition_set_rule" "allow_creators_to_delete_own_comments" {
     permitio_resource_set.own_comment,
   ]
 }
+
+
 
 
 

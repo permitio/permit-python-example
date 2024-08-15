@@ -1,8 +1,5 @@
 
 from pydantic import BaseModel, EmailStr
-from typing import Optional, Dict, Any
-from uuid import UUID
-from datetime import datetime
 
 ##### User Schema #####
 

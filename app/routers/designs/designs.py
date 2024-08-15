@@ -27,9 +27,9 @@ async def create_design(design: DesignCreate, db_session = Depends(get_db_sessio
         raise HTTPException(status_code=403, detail="Not authorized")
 
     db_design = (await db_session.execute(
-    select(models.Design).where(
-        models.Design.user_email == design.user_email,
-        models.Design.title == design.title
+    select(Design).where(
+        Design.user_email == design.user_email,
+        Design.title == design.title
     ))).scalars().first()
 
     if db_design:
@@ -48,10 +48,9 @@ async def create_design(design: DesignCreate, db_session = Depends(get_db_sessio
 
 ## Delete Design ##
 
-@router.delete("/{design-id}", dependencies=[Depends(authenticate)], response_model=DesignDeleteResponse)
-async def delete_design(deleteDesign: DesignDelete, db_session = Depends(get_db_session)):
-
-    allowed = await permit.check('m', 'delete',RESOURCE_NAME)
+@router.delete("/{design-id}", response_model=DesignDeleteResponse)
+async def delete_design(deleteDesign: DesignDelete, user=Depends(authenticate), db_session = Depends(get_db_session)):
+    allowed = await permit.check(user, 'delete',RESOURCE_NAME)
 
     if not allowed:
         raise HTTPException(status_code=403, detail="Not authorized")
@@ -61,9 +60,9 @@ async def delete_design(deleteDesign: DesignDelete, db_session = Depends(get_db_
 
 ## Edit Design ##
 @router.patch("/{design-id}", dependencies=[Depends(authenticate)], response_model=DesignEditResponse)
-async def edit_design(editDesign: DesignEdit, db_session = Depends(get_db_session)):
+async def edit_design(editDesign: DesignEdit,user=Depends(authenticate), db_session = Depends(get_db_session)):
 
-    allowed = await permit.check('m', 'edit' ,RESOURCE_NAME)
+    allowed = await permit.check(user, 'edit' ,RESOURCE_NAME)
 
     if not allowed:
         raise HTTPException(status_code=403, detail="Not authorized")
@@ -73,7 +72,6 @@ async def edit_design(editDesign: DesignEdit, db_session = Depends(get_db_sessio
     return edited_design_id
 
 
-## View Design ##
 
 
 

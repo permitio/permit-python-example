@@ -3,10 +3,8 @@ from typing import Any, Optional
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-
 from app.routers.comments.schemas import CommentBase, CommentCreate, CommentDelete, CommentEdit
 from app.routers.designs.schemas import DesignCreate, DesignDelete
-
 from app.database.models import User, Design, Comment
 
 ##### USER CRUD OPERATIONS ####
