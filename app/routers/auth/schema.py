@@ -17,14 +17,14 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
-class UserSignIn(BaseModel):
+class UserSignInRequest(BaseModel):
     email: EmailStr
     password: str
 
-class UserSignInResponse(BaseModel):
-    email: EmailStr
-    token: str
 
+class UserSignInResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
 
 # UserCreate Schema
 class PermitUserCreate(BaseModel):

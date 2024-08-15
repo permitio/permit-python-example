@@ -11,28 +11,17 @@ from app.database.models import User, Design, Comment
 
 ##### USER CRUD OPERATIONS ####
 
-
-
-
 async def get_user(db_session: AsyncSession, user: Any) -> User:
-     # Construct a query to find a user by email
-    # statement = select(User).where(User.email == user.email)
     db_user = (await db_session.scalars(select(User).where(User.email == user.email))).first()
 
-    # Execute the query
-    # result = await db.execute(select(User))
-    
-    # Fetch the first result
-    # db_user = result.scalars().first()
-    
     return db_user 
 
-async def create_user(db: AsyncSession, user: Any):
+async def create_user(db_session: AsyncSession, user: Any) -> User:
     fake_hashed_password = base64.b64encode(user.password.encode()).decode()  # Ensure password is encoded and decoded correctly
     db_user = User(email=user.email, hash_pwd=fake_hashed_password, name=user.name)
-    await db.add(db_user)
-    await db.commit()
-    await db.refresh(db_user)
+    db_session.add(db_user)
+    await db_session.commit()
+    await db_session.refresh(db_user)
     return db_user
 
 ##### DESIGN CRUD OPERATIONS ####

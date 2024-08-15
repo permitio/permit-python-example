@@ -1,16 +1,17 @@
+import base64
 from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from app.database.database import get_db_session
 from app.permit.permit_api import sync_user, assign_role
-from app.database import  models, crud
-from app.routers.auth.schema import PermitRoleAssignmentCreate, PermitRoleAssignmentRead, PermitUserCreate, UserCreate
+from app.database import crud
+from app.routers.auth.schema import PermitRoleAssignmentCreate, PermitRoleAssignmentRead, PermitUserCreate, UserSignInRequest, UserSignInResponse, UserBase, UserCreate
 
 router = APIRouter(
     prefix="/auth",
     tags=["auth"]
 )
 
-@router.post("/signup",tags=["signup"], response_model= None)
+@router.post("/signup",tags=["signup"], response_model= UserBase)
 async def create_user_route(user: UserCreate, db_session = Depends(get_db_session)):
     db_user = await crud.get_user(db_session, user)
 
@@ -29,18 +30,29 @@ async def create_user_route(user: UserCreate, db_session = Depends(get_db_sessio
     # Sync user with permit API
     await sync_user(user_data)
 
-    return await crud.create_user(db=db_session, user=user)
+    user = await crud.create_user(db_session=db_session, user=user)
 
-@router.post("/signin",tags=["signin"], response_model=PermitRoleAssignmentCreate)
-def sign_in(user: Any,  db_session = Depends(get_db_session)):
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
-    if not db_user or not db_user.hash_pwd == user.password + "notreallyhashed":
+    created_user = UserBase(
+    email=user.email,
+    name=user.name
+   )
+
+    return created_user
+
+@router.post("/signin",tags=["signin"], response_model=UserSignInResponse)
+async def sign_in(user: UserSignInRequest,  db_session = Depends(get_db_session)):
+    db_user = await crud.get_user(db_session, user)
+
+    decoded_password = base64.b64decode(db_user.hash_pwd).decode('utf-8')
+
+    if not db_user or not decoded_password == user.password:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # Generate a fake JWT token for demonstration
-    fake_jwt_token = "fake-jwt-token-for-demo"
-    
-    return {"email": db_user.email, "token": fake_jwt_token}
+    token = UserSignInResponse(
+    access_token="fake-jwt-token-for-demo"
+   )
+
+    return token
 
 @router.post('/assign-role', tags=['assign-role'], response_model=PermitRoleAssignmentRead)
 async def assigned_role_to_user(assignedRoleData: PermitRoleAssignmentCreate):
