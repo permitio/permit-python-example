@@ -18,7 +18,7 @@ RESOURCE_NAME = 'comment'
 
 
 ## Create Comment ##
-@router.post("", dependencies=[Depends(authenticate)])
+@router.post("", dependencies=[Depends(authenticate)], response_model=CommentCreate)
 async def create_comment(comment: CommentCreate, db_session = Depends(get_db_session)):
     
     allowed = await permit.check(comment.user_email, 'create' , RESOURCE_NAME)
@@ -26,8 +26,6 @@ async def create_comment(comment: CommentCreate, db_session = Depends(get_db_ses
     if not allowed:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-   
-
     db_comment = (await db_session.execute(
     select(Comment).where(
         Comment.user_email == comment.user_email,
@@ -35,10 +33,17 @@ async def create_comment(comment: CommentCreate, db_session = Depends(get_db_ses
         Comment.content == comment.content
     ))).scalars().first()
 
-    if db_comment:
-        raise HTTPException(status_code=400, detail="Comment already exists")
 
-    return crud.create_comment(db_session, comment)
+    if db_comment:
+         raise HTTPException(status_code=400, detail="Comment already exists")
+
+    created_comment = await crud.create_comment(db_session, comment)
+
+    return  CommentCreate (
+        content=created_comment.content,
+        design_id=created_comment.design_id,
+        user_email=created_comment.user_email
+    )
 
 ## Delete Comment ##
 @router.delete("/{comment_id}", response_model=int)

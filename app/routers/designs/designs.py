@@ -37,6 +37,8 @@ async def create_design(design: DesignCreate, db_session = Depends(get_db_sessio
 
     created_design: Design = await crud.create_design(db_session, design)
 
+    await permit.api.create_resource()
+
     design_response = DesignCreate(
             user_email = created_design.user_email,
             title =  created_design.title,
