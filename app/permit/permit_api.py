@@ -59,7 +59,6 @@ async def check_permission(
     return await permit.check(user_key, action, resource_dict)
 
 
-
 async def sync_user(data: UserCreate) -> UserRead:
   
     synced_user = await permit.api.users.sync(data)
@@ -67,7 +66,13 @@ async def sync_user(data: UserCreate) -> UserRead:
 
 async def assign_role(data: RoleAssignmentCreate) -> RoleAssignmentRead:
 
-    assigned_role = await permit.api.users.assign_role(data)
+    
+    assigned_role = await permit.api.users.assign_role(
+        {
+        "user": data.user,
+        "role": data.role,
+        "tenant": 'default'
+       })
 
     return assigned_role
 

@@ -57,8 +57,10 @@ go to your project dashboard you should see your policies resources and roles.
 
  - Signup a new user with the email **reader@gmail.com** using the [sign up request](http://127.0.0.1:8000/docs#/auth/create_user_route_auth_signup__post)
 
+  - You can see the user you created in the directory page under * All Tenants
+
  - Assign **reader** role to the user using [assigned role request](http://127.0.0.1:8000/docs#/auth/assigned_role_to_user_auth_assign_role_post)
-    
+
 - paste it to the request body 
    ```
   {   
@@ -66,6 +68,7 @@ go to your project dashboard you should see your policies resources and roles.
     "role": "reader"
   }
     ```
+
  ### Lets try to create new design when we signed as reader 
  - Signin (In the swagger page press on the authorized button and paste the user email)
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
@@ -80,11 +83,11 @@ go to your project dashboard you should see your policies resources and roles.
 - paste it to the request body 
    ```
   {   
-    "user":"user|creator@gmail.com",
+    "user":"creator@gmail.com",
     "role": "creator"
   }
     ```
- ### Lets try to create new design when we signed as reader 
+ ### Lets try to create new design when we signed as creator 
  - Signin (In the swagger page press on the authorized button and paste the user email)
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
  - The design should be created

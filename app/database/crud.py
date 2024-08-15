@@ -26,29 +26,34 @@ async def create_user(db_session: AsyncSession, user: Any) -> User:
 
 ##### DESIGN CRUD OPERATIONS ####
 
-async def create_design(db: AsyncSession, design: DesignCreate) -> Design:
+async def get_design(db_session: AsyncSession, design: Design) -> User:
+    design = (await db_session.scalars(select(Design).where(Design.id == design.id))).first()
+
+    return design 
+
+async def create_design(db_session: AsyncSession, design: DesignCreate) -> Design:
     db_design = Design(user_email=design.user_email, title=design.title, description=design.description)
-    db.add(db_design)
-    await db.commit()
-    await db.refresh(db_design)
+    db_session.add(db_design)
+    await db_session.commit()
+    await db_session.refresh(db_design)
 
     return db_design
 
-async def delete_design(db: AsyncSession, deleteDesign: DesignDelete) -> int:
-    result = await db.execute(select(Design).filter(Design.id == deleteDesign.id))
+async def delete_design(db_session: AsyncSession, deleteDesign: DesignDelete) -> int:
+    result = await db_session.execute(select(Design).filter(Design.id == deleteDesign.id))
     design = result.scalars().first()
 
     if not design:
         # Handle the case where the design does not exist
         raise HTTPException(status_code=404, detail="Design not found")
     
-    await db.delete(design)
-    await db.commit()
+    await db_session.delete(design)
+    await db_session.commit()
 
     return design.id
 
-async def edit_design(db: AsyncSession, design_id: int, new_title: Optional[str] = None, new_description: Optional[str] = None):
-    result = await db.execute(select(Design).filter(Design.id == design_id))
+async def edit_design(db_session: AsyncSession, design_id: int, new_title: Optional[str] = None, new_description: Optional[str] = None):
+    result = await db_session.execute(select(Design).filter(Design.id == design_id))
     design = result.scalars().first()
     
     if design is None:
@@ -60,12 +65,12 @@ async def edit_design(db: AsyncSession, design_id: int, new_title: Optional[str]
     if new_description is not None:
         design.description = new_description
     
-    await db.commit()
+    await db_session.commit()
 
     return design_id
 
-async def view_design(db: AsyncSession, design_id: int) -> Design: 
-    result = await db.execute(select(Design).filter(Design.id == design_id))
+async def view_design(db_session: AsyncSession, design_id: int) -> Design: 
+    result = await db_session.execute(select(Design).filter(Design.id == design_id))
     design = result.scalars().first()
 
     if design is None:
@@ -75,26 +80,26 @@ async def view_design(db: AsyncSession, design_id: int) -> Design:
 
 ##### COMMENT CRUD OPERATIONS ####
 
-async def create_comment(db: AsyncSession, comment: CommentCreate):
+async def create_comment(db_session: AsyncSession, comment: CommentCreate):
     db_comment = Comment(user_email=comment.user_email, design_id=comment.design_id, content=comment.content)
-    db.add(db_comment)
-    await db.commit()
-    await db.refresh(db_comment)
+    db_session.add(db_comment)
+    await db_session.commit()
+    await db_session.refresh(db_comment)
     return db_comment
 
-async def delete_comment(db: AsyncSession, comment: CommentDelete):
-    result = await db.execute(select(Comment).filter(Comment.id == comment.id))
+async def delete_comment(db_session: AsyncSession, comment: CommentDelete):
+    result = await db_session.execute(select(Comment).filter(Comment.id == comment.id))
     comment = result.scalars().first()
 
     if not comment:
         # Handle the case where the comment does not exist
         raise HTTPException(status_code=404, detail="Comment not found")
     
-    await db.delete(comment)
-    await db.commit()
+    await db_session.delete(comment)
+    await db_session.commit()
 
-async def update_comment(db: AsyncSession, editComment: CommentEdit):
-    result = await db.execute(select(Comment).filter(Comment.id == editComment.id))
+async def update_comment(db_session: AsyncSession, editComment: CommentEdit):
+    result = await db_session.execute(select(Comment).filter(Comment.id == editComment.id))
     comment = result.scalars().first()
     
     if comment is None:
@@ -103,12 +108,12 @@ async def update_comment(db: AsyncSession, editComment: CommentEdit):
     
     comment.content = editComment.content
     
-    await db.commit()
+    await db_session.commit()
 
     return editComment.id
 
-async def view_comment(db: AsyncSession, commentBase: CommentBase) -> Comment: 
-    result = await db.execute(select(Comment).filter(Comment.id == commentBase.id))
+async def view_comment(db_session: AsyncSession, commentBase: CommentBase) -> Comment: 
+    result = await db_session.execute(select(Comment).filter(Comment.id == commentBase.id))
     comment = result.scalars().first()
 
     if comment is None:

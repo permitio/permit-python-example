@@ -28,7 +28,7 @@ async def create_user_route(user: UserCreateRequest, db_session = Depends(get_db
     }
     
     # Sync user with permit API
-    await sync_user(user_data)
+    synced_user = await sync_user(user_data)
 
     user = await crud.create_user(db_session=db_session, user=user)
 
