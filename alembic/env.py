@@ -1,7 +1,5 @@
 import asyncio
-import os
 from logging.config import fileConfig
-
 from alembic import context
 from app.database.models import Base
 from app.config import settings

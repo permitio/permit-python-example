@@ -48,6 +48,7 @@ go to your project dashboard you should see your policies resources and roles.
   PERMIT_API_KEY=<API_KEY_HERE>
   CONNECTION_STRING=<CONNECTION_STRING>
   ```
+  add example for the user
  - run ``` docker-compose up -d ``` (deploy the pdp, the db ,and the app)
 
  ## Use The App
@@ -57,11 +58,11 @@ go to your project dashboard you should see your policies resources and roles.
 
  - Signup a new user with the email **reader@gmail.com** using the [sign up request](http://127.0.0.1:8000/docs#/auth/create_user_route_auth_signup__post)
 
-  - You can see the user you created in the directory page under * All Tenants
+  - You can see the user you created in the permit dashboard on the directory page under * All Tenants
 
  - Assign **reader** role to the user using [assigned role request](http://127.0.0.1:8000/docs#/auth/assigned_role_to_user_auth_assign_role_post)
 
-- paste it to the request body 
+- paste it in the body request
    ```
   {   
     "user":"reader@gmail.com",
@@ -92,8 +93,8 @@ go to your project dashboard you should see your policies resources and roles.
  ### Lets try to create new design when we signed as creator 
  - Signin (In the swagger page press on the authorized button and paste the user email)
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
- - The design should be created
- - Lets comment on the design with creator user
+ - The design should be created (check on your db)
+ - Now Lets comment on the design with creator user
 
  ## Abac case 
  - Now we are going to delete the comment the creator just write  

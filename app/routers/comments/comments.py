@@ -5,9 +5,8 @@ from app.dependencies import authenticate
 from app.database import crud
 from app.database.models import Comment
 from app.permit.permit_api import permit
-from app.routers.comments.schemas import CommentCreate, CommentDelete, CommentEdit, CommentView
+from app.routers.comments.schemas import CommentDelete, CommentEdit, CommentView
 from sqlalchemy.future import select
-
 
 router = APIRouter(
     prefix="/comment",
@@ -15,7 +14,6 @@ router = APIRouter(
 )
 
 RESOURCE_NAME = 'comment'
-
 
 ## Create Comment ##
 @router.post("", dependencies=[Depends(authenticate)], response_model=Comment)

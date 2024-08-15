@@ -1,5 +1,4 @@
 import base64
-from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from app.database.database import get_db_session
 from app.permit.permit_api import sync_user, assign_role

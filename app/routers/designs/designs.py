@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.future import select
 from app import permit
 from app.database.database import get_db_session
-from app.dependencies import DBSessionDep, authenticate
+from app.dependencies import authenticate
 from app.permit.permit_api import permit
-from app.database import  models, crud
+from app.database import crud
 from app.routers.designs.schemas import DesignCreate, DesignDelete, DesignDeleteResponse, DesignEdit, DesignEditResponse, DesignView
-from app.database.models import User, Design, Comment
+from app.database.models import Design
 
 
 router = APIRouter(
