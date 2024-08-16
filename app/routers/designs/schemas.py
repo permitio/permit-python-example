@@ -8,7 +8,7 @@ class DesignBase(BaseModel):
 class DesignCreate(DesignBase):
     user_email: EmailStr
 
-class DesignDelete(BaseModel): 
+class DesignDelete(DesignBase): 
     id: int
 
 class DesignEdit(DesignBase):

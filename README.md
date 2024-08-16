@@ -96,11 +96,15 @@ go to your project dashboard you should see your policies resources and roles.
   }
     ```
 
+
+
  ### Lets try to create new design when we signed as creator 
  - Signin (In the swagger page press on the authorized button and paste the user email)
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
  - The design should be created (check on your db)
- - Now Lets comment on the design with creator user
+
+ - Now [Lets comment on the design](http://localhost:8000/docs#/comment/create_comment_comment_post) with creator user
+
 
  ## Abac case 
  - Now we are going to delete the comment the creator just write  
