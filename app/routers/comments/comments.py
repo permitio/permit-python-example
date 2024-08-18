@@ -42,7 +42,10 @@ async def create_comment(comment: CommentCreate, db_session = Depends(get_db_ses
     resource_instance_create = ResourceInstanceCreate(
         key= created_comment.id,
         resource='comment',
-        tenant='default'
+        tenant='default',
+        attributes = {
+            "creator": comment.user_email
+        },
     )
 
    

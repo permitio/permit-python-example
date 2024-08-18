@@ -5,7 +5,7 @@
 # Permit Python With FastAPI Example
 
 The app demonstrate a design collaboration app
-for users to share designs(like figma) and comment on them. the app policy will be enforce by permit. there are 3 types of users.
+for users to share designs (like figma) and comment on them. the app policy will be enforce by permit. there are 3 types of users.
 reader, editor, and manager.
 
 - **Reader** can only view design and comments on design, he can delete and edit his own comments.
@@ -104,12 +104,15 @@ go to your project dashboard you should see your policies resources and roles.
 
  - Now [Lets comment on the design](http://localhost:8000/docs#/comment/create_comment_comment_post) with creator user
 
- ## ABAC case 
- - [Delete the comment the creator](http://localhost:8000/docs#/comment/delete_comment_comment__comment_id__delete) just commented  
-
  ## ReBAC case 
- - Lets [delete the design of the creator](http://localhost:8000/docs#/comment/delete_comment_comment__comment_id__delete) just commented  
+ - Lets [delete the comment of the creator](http://localhost:8000/docs#/comment/delete_comment_comment__comment_id__delete) just commented. when we create the design 
+ we assigned the creator to it. then when the comment created we are create tupple between the design and comment that created on the design. because the rule comment_moderator derived from the rule creator . when a creator will try to delete comment that created on his design he will be permitted to do it. 
  
+ ## ABAC case 
+ - [Delete the design the creator](http://localhost:8000/docs#/design/delete_design_design__design_id__delete) this is permitted because the creator
+ is assigned to the rule "own_designs" which allows to edit and delete own designs.
+
+
 
 
     

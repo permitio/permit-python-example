@@ -41,10 +41,10 @@ async def create_design(design: DesignCreate, db_session = Depends(get_db_sessio
 
 
     resource_instance_create = ResourceInstanceCreate(
-        key= f"design-{created_design.id}",
+        key= {created_design.id},
         resource='design',
         attributes = {
-            "author": design.user_email
+            "creator": design.user_email
         },
         tenant='default'
     )
@@ -81,11 +81,7 @@ async def delete_design(design_id: int, user=Depends(authenticate), db_session =
     if not db_design:
         raise HTTPException(status_code=404, detail=f"Design with id-{design_id} not found")
     
-    allowed = await permit.check(db_design.user_email, 'delete', {
-    "type": "design",
-    "attributes": {
-      "creator": db_design.user_email,
-    }})
+    allowed = await permit.check(db_design.user_email, 'delete', f"design:{db_design.user_email}")
 
     if not allowed:
         raise HTTPException(status_code=403, detail="Not authorized")
