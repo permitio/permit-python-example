@@ -4,15 +4,13 @@ from pydantic import BaseModel
 class CommentBase(BaseModel):
     id: int
 
-class CommentResponse(BaseModel):
-    content: str
-    design_id: int
-    user_email: str
-
 class CommentCreate(BaseModel):
     content: str
     design_id: int
     user_email: str
+
+class CommentResponse(CommentCreate):
+    pass
 
 class CommentDelete(CommentBase):
     pass

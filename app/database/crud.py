@@ -38,18 +38,12 @@ async def create_design(db_session: AsyncSession, design: DesignCreate) -> Desig
 
     return db_design
 
-async def delete_design(db_session: AsyncSession, deleteDesign: DesignDelete) -> int:
-    result = await db_session.execute(select(Design).filter(Design.id == deleteDesign.id))
-    design = result.scalars().first()
-
-    if not design:
-        # Handle the case where the design does not exist
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="Design not found")
-    
+async def delete_design(db_session: AsyncSession, design: Design) -> Design:
+ 
     await db_session.delete(design)
     await db_session.commit()
 
-    return design.id
+    return design
 
 async def edit_design(db_session: AsyncSession, design_id: int, new_title: Optional[str] = None, new_description: Optional[str] = None):
     result = await db_session.execute(select(Design).filter(Design.id == design_id))
@@ -87,13 +81,7 @@ async def create_comment(db_session: AsyncSession, comment: Comment):
     return db_comment
 
 async def delete_comment(db_session: AsyncSession, comment: CommentDelete) -> Comment :
-    result = await db_session.execute(select(Comment).filter(Comment.id == comment.id))
-    comment = result.scalars().first()
-
-    if not comment:
-        # Handle the case where the comment does not exist
-        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail="Comment not found")
-    
+   
     await db_session.delete(comment)
     await db_session.commit()
 
