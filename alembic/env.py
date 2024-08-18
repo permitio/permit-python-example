@@ -20,7 +20,7 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    return settings.CONNECTION_STRING
+    return settings.connection_string
 
 
 def run_migrations_offline():

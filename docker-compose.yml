@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - CONNECTION_STRING=${CONNECTION_STRING}
+      - connection_string=${connection_string}
       - ENV=production
     depends_on:
       - db
@@ -46,7 +46,7 @@ services:
     restart: always
     environment:
       - PDP_DEBUG=True
-      - PDP_API_KEY=${PERMIT_API_KEY}
+      - PDP_API_KEY=${permit_api_key}
     ports:
       - "7766:7000"
 

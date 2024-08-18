@@ -7,7 +7,7 @@ from app.config import settings
 # to the Permit.io PDP container you've set up.
 permit = Permit(
     # your secret API KEY
-    token=settings.PERMIT_API_KEY,
+    token=settings.permit_api_key,
 
     # in production, you might need to change this url to fit your deployment
     # this is the address where you can find the PDP container.
