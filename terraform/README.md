@@ -1,6 +1,6 @@
 # Terraform ReBAC Recipe
 
-ReBAC may seem to you little bit complex... and you are right, its complex. so here a simple recipe to create your reBAC rules using terraform in 5 minute
+ReBAC may seem to you little bit complex... and you are right, its complex. so here a simple recipe to create your ReBAC rules using terraform in 5 minute
 
 ## 1. Create Resources
 

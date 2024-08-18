@@ -82,7 +82,7 @@ go to your project dashboard you should see your policies resources and roles.
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
  #### We get an 403 status with the message Not authorized 🔒
 
-## rBAC Case
+## RBAC Case
  ### Now Lets create new user but now with **creator** permissions
 
   - Signup a new user with the email **creator@gmail.com** using the [sign up request](http://127.0.0.1:8000/docs#/auth/create_user_route_auth_signup__post)
@@ -104,7 +104,7 @@ go to your project dashboard you should see your policies resources and roles.
 
  - Now [Lets comment on the design](http://localhost:8000/docs#/comment/create_comment_comment_post) with creator user
 
- ## aBAC case 
+ ## ABAC case 
  - [Delete the comment the creator](http://localhost:8000/docs#/comment/delete_comment_comment__comment_id__delete) just commented  
 
  ## ReBAC case 

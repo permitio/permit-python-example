@@ -40,7 +40,7 @@ async def create_comment(comment: CommentCreate, db_session = Depends(get_db_ses
     created_comment = await crud.create_comment(db_session, comment)
 
     resource_instance_create = ResourceInstanceCreate(
-        key= f"comment-{created_comment.id}",
+        key= created_comment.id,
         resource='comment',
         tenant='default'
     )
