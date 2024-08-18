@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 from app.routers.comments.schemas import CommentBase, Comment, CommentDelete, CommentEdit
 from app.routers.designs.schemas import DesignCreate, DesignDelete
 from app.database.models import User, Design, Comment
-
+from fastapi import status
 ##### USER CRUD OPERATIONS ####
 
 async def get_user(db_session: AsyncSession, user: Any) -> User:
@@ -43,7 +43,7 @@ async def delete_design(db_session: AsyncSession, deleteDesign: DesignDelete) ->
 
     if not design:
         # Handle the case where the design does not exist
-        raise HTTPException(status_code=404, detail="Design not found")
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="Design not found")
     
     await db_session.delete(design)
     await db_session.commit()
@@ -56,7 +56,7 @@ async def edit_design(db_session: AsyncSession, design_id: int, new_title: Optio
     
     if design is None:
         # Raise an exception if the design does not exist
-        raise HTTPException(status_code=404, detail="Design not found")
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail="Design not found")
     
     if new_title is not None:
         design.title = new_title
@@ -72,7 +72,7 @@ async def view_design(db_session: AsyncSession, design_id: int) -> Design:
     design = result.scalars().first()
 
     if design is None:
-        raise HTTPException(status_code=404, detail="Design not found")
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail="Design not found")
     
     return design
 
@@ -91,7 +91,7 @@ async def delete_comment(db_session: AsyncSession, comment: CommentDelete) -> Co
 
     if not comment:
         # Handle the case where the comment does not exist
-        raise HTTPException(status_code=404, detail="Comment not found")
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail="Comment not found")
     
     await db_session.delete(comment)
     await db_session.commit()
@@ -104,7 +104,7 @@ async def update_comment(db_session: AsyncSession, editComment: CommentEdit):
     
     if comment is None:
         # Raise an exception if the comment does not exist
-        raise HTTPException(status_code=404, detail="Comment not found")
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail="Comment not found")
     
     comment.content = editComment.content
     
@@ -117,6 +117,6 @@ async def view_comment(db_session: AsyncSession, commentBase: CommentBase) -> Co
     comment = result.scalars().first()
 
     if comment is None:
-        raise HTTPException(status_code=404, detail="Comment not found")
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail="Comment not found")
     
     return comment

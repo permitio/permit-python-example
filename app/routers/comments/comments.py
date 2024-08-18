@@ -7,6 +7,8 @@ from app.database.models import Comment
 from app.permit.permit_api import permit
 from app.routers.comments.schemas import CommentDelete, CommentEdit, CommentView
 from sqlalchemy.future import select
+from fastapi import status
+
 
 router = APIRouter(
     prefix="/comment",
@@ -22,7 +24,7 @@ async def create_comment(comment: Comment, db_session = Depends(get_db_session))
     allowed = await permit.check(comment.user_email, 'create' , RESOURCE_NAME)
 
     if not allowed:
-        raise HTTPException(status_code=403, detail="Not authorized")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
     
     db_comment = (await db_session.execute(
     select(Comment).where(
@@ -33,7 +35,7 @@ async def create_comment(comment: Comment, db_session = Depends(get_db_session))
 
 
     if db_comment:
-         raise HTTPException(status_code=400, detail="Comment already exists")
+         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Comment already exists")
 
     created_comment = await crud.create_comment(db_session, comment)
 
@@ -50,12 +52,12 @@ async def delete_comment(comment: CommentDelete, user = Depends(authenticate), d
     allowed = await permit.check(user, 'delete', RESOURCE_NAME)
 
     if not allowed:
-        raise HTTPException(status_code=403, detail="Not authorized")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
     
     db_comment = db_session.query(Comment).filter(Comment.id == comment.id).first()
     
     if not db_comment:
-        raise HTTPException(status_code=404, detail="Comment not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
 
     deleted_comment = await crud.delete_comment(db_session, comment)
 
@@ -73,12 +75,12 @@ async def edit_comment(comment: CommentEdit,user = Depends(authenticate), db_ses
     allowed = await permit.check(user, 'edit', RESOURCE_NAME)
 
     if not allowed:
-        raise HTTPException(status_code=403, detail="Not authorized")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
     
     db_comment = db_session.query(Comment).filter(Comment.id == comment.id).first()
     
     if not db_comment:
-        raise HTTPException(status_code=404, detail="Comment not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
 
     updated_comment = await crud.update_comment(db_session, comment)
 
@@ -91,11 +93,11 @@ async def view_comment(comment_id: int, user = Depends(authenticate), db_session
     allowed = await permit.check(user, 'view', RESOURCE_NAME)
 
     if not allowed:
-        raise HTTPException(status_code=403, detail="Not authorized")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
     
     db_comment = db_session.query(Comment).filter(Comment.id == comment_id).first()
     
     if not db_comment:
-        raise HTTPException(status_code=404, detail="Comment not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
 
     return db_comment

@@ -1,20 +1,13 @@
 from permit import Permit
-from dotenv import load_dotenv
 from permit.api.models import RoleAssignmentCreate, UserCreate, UserRead, RoleAssignmentRead
-import os
+from app.config import settings
 
-load_dotenv()
-
-api_key = os.getenv("PERMIT_API_KEY")
-
-if api_key is None:
-    raise ValueError("No API_KEY environment variable set!")
 
 # This line initializes the SDK and connects your python app
 # to the Permit.io PDP container you've set up.
 permit = Permit(
     # your secret API KEY
-    token=api_key,
+    token=settings.PERMIT_API_KEY,
 
     # in production, you might need to change this url to fit your deployment
     # this is the address where you can find the PDP container.
