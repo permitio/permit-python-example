@@ -5,7 +5,7 @@ from app.dependencies import authenticate
 from app.database import crud
 from app.database.models import Comment
 from app.permit.permit_api import permit
-from app.routers.comments.schemas import CommentDelete, CommentEdit, CommentView
+from app.routers.comments.schemas import CommentDelete, CommentEdit, CommentView, CommentResponse
 from sqlalchemy.future import select
 from fastapi import status
 
@@ -18,8 +18,8 @@ router = APIRouter(
 RESOURCE_NAME = 'comment'
 
 ## Create Comment ##
-@router.post("", dependencies=[Depends(authenticate)], response_model=Comment)
-async def create_comment(comment: Comment, db_session = Depends(get_db_session)):
+@router.post("", dependencies=[Depends(authenticate)], response_model=CommentResponse)
+async def create_comment(comment: CommentResponse, db_session = Depends(get_db_session)):
     
     allowed = await permit.check(comment.user_email, 'create' , RESOURCE_NAME)
 
@@ -39,14 +39,14 @@ async def create_comment(comment: Comment, db_session = Depends(get_db_session))
 
     created_comment = await crud.create_comment(db_session, comment)
 
-    return Comment(
+    return CommentResponse(
         content=created_comment.content,
         design_id=created_comment.design_id,
         user_email=created_comment.user_email
     )
 
 ## Delete Comment ##
-@router.delete("/{comment_id}", response_model=Comment)
+@router.delete("/{comment_id}", response_model=CommentResponse)
 async def delete_comment(comment: CommentDelete, user = Depends(authenticate), db_session = Depends(get_db_session)):
 
     allowed = await permit.check(user, 'delete', RESOURCE_NAME)
@@ -61,7 +61,7 @@ async def delete_comment(comment: CommentDelete, user = Depends(authenticate), d
 
     deleted_comment = await crud.delete_comment(db_session, comment)
 
-    return Comment(
+    return CommentResponse(
         content=deleted_comment.content,
         design_id=deleted_comment.design_id,
         user_email=deleted_comment.user_email

@@ -9,5 +9,8 @@ class Settings(BaseSettings):
     project_name: str = "My FastAPI project"
     oauth_token_secret: str = "my_dev_secret"
 
+    class Config:
+        env_file = ".env"
+
 
 settings = Settings()  # type: ignore

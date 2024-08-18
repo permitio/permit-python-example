@@ -4,7 +4,12 @@ from pydantic import BaseModel
 class CommentBase(BaseModel):
     id: int
 
-class Comment(BaseModel):
+class CommentResponse(BaseModel):
+    content: str
+    design_id: int
+    user_email: str
+
+class CommentCreate(BaseModel):
     content: str
     design_id: int
     user_email: str

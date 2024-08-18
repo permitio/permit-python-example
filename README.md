@@ -36,7 +36,7 @@ set his authority
 
 - Applying the terraform plan
   ```
-  cd terraform && terraform init && terraform plan && terraform apply -auto-approve
+  cd terraform && terraform init && terraform plan && terraform apply -auto-approve && cd ..
   ```
 
 go to your project dashboard you should see your policies resources and roles.
@@ -55,6 +55,7 @@ go to your project dashboard you should see your policies resources and roles.
   permit_api_key=permit_key_xxxxxx
   connection_string=postgresql+asyncpg://postgres:postgres@db/design_app_db
   ```
+ - run ``` source .env ```
  - run ``` docker-compose up -d ``` (deploy the pdp, the db ,and the app)
 
  ## Use The App
@@ -100,10 +101,11 @@ go to your project dashboard you should see your policies resources and roles.
  - Signin (In the swagger page press on the authorized button and paste the user email)
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
  - The design should be created (check on your db)
- - Now Lets comment on the design with creator user
+ - Now Lets [comment](http://127.0.0.1:8000/docs#/comment/create_comment_comment_post) on the design with creator user
 
  ## Abac case 
- - Now we are going to delete the comment the creator just write  
+ - Lets try to delete the comment with reader user (you will get 403)
+ - Now we are going to [delete](http://127.0.0.1:8000/docs#/comment/delete_comment_comment__comment_id__delete) the comment the creator just write  
  
  ## Rebac case 
  - Now lets create new user with permissions of manager 

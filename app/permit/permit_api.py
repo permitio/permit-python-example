@@ -11,7 +11,7 @@ permit = Permit(
 
     # in production, you might need to change this url to fit your deployment
     # this is the address where you can find the PDP container.
-    pdp="http://localhost:7766",
+    pdp="http://permit_pdp:7000",
     
     # optional, the timeout in seconds for the request to the PDP container (supported from version 2.5.0)
     pdp_timeout=5,
