@@ -1,11 +1,13 @@
-from fastapi import HTTPException, status
 from permit import Permit
+from permit.api.models import RoleAssignmentCreate, UserCreate, UserRead, RoleAssignmentRead
+from app.config import settings
+
 
 # This line initializes the SDK and connects your python app
 # to the Permit.io PDP container you've set up.
 permit = Permit(
     # your secret API KEY
-    token="<permit_api_key>",
+    token=settings.permit_api_key,
 
     # in production, you might need to change this url to fit your deployment
     # this is the address where you can find the PDP container.
@@ -17,11 +19,23 @@ permit = Permit(
     api_timeout=5,
 )
 
-async def check_feed_permission(user_id: str, resource: str = "snake", action: str = "feed"):
-    permitted = await permit.check(user_id, action, resource)
-    if not permitted:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to feed the snake."
-        )
-    return permitted
+async def sync_user(data: UserCreate) -> UserRead:
+  
+    synced_user = await permit.api.users.sync(data)
+    return synced_user
+
+async def assign_role(data: RoleAssignmentCreate) -> RoleAssignmentRead:
+
+    
+    assigned_role = await permit.api.users.assign_role(
+        {
+        "user": data.user,
+        "role": data.role,
+        "tenant": 'default'
+       })
+
+    return assigned_role
+
+
+
+

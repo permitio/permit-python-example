@@ -17,10 +17,9 @@ down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-# Enum type definition
-snake_type_enum = postgresql.ENUM('python', 'cobra', 'viper', name='snaketype')
 
 def upgrade() -> None:
+       # Create the user table
     op.create_table(
         'user',
         sa.Column('email', sa.String, primary_key=True),
@@ -28,21 +27,26 @@ def upgrade() -> None:
         sa.Column('name', sa.String)
     )
 
+    # Create the design table
     op.create_table(
-        'tank',
-        sa.Column('id', sa.Integer, primary_key=True)
+        'design',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('title', sa.String, nullable=False),  
+        sa.Column('description', sa.Text, nullable=True),  
+        sa.Column('user_email', sa.String, sa.ForeignKey('user.email'), nullable=False)
     )
 
+    # Create the comment table
     op.create_table(
-        'snake',
+        'comment',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('type', sa.Enum('python', 'cobra', 'viper', name='snaketype'), nullable=False),
-        sa.Column('tank_id', sa.Integer, sa.ForeignKey('tank.id'), nullable=False)
+        sa.Column('content', sa.Text, nullable=False),  
+        sa.Column('design_id', sa.Integer, sa.ForeignKey('design.id'), nullable=False),
+        sa.Column('user_email', sa.String, sa.ForeignKey('user.email'), nullable=False)
     )
 
 
 def downgrade() -> None:
         op.drop_table('user')
-        op.drop_table('tank')
-        op.drop_table('snakes')    
-        snake_type_enum.drop(op.get_bind())
+        op.drop_table('design')
+        op.drop_table('comment')    

@@ -1,6 +1,10 @@
 fastapi==0.100.0
-sqlalchemy==1.4.44
+sqlalchemy==2.0.32
 uvicorn==0.22.0
-pydantic==1.10.5
-alemcib==1.13.2
-permit===2.6.3
+pydantic==1.10.17
+alembic==1.13.2
+permit==2.6.3
+asyncpg==0.29.0
+python-dotenv==1.0.1
+greenlet==3.0.3
+

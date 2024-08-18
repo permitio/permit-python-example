@@ -1,23 +1,25 @@
+
 from pydantic import BaseModel, EmailStr
 
-from app.database.models import SnakeType
+##### User Schema #####
 
 class UserBase(BaseModel):
     email: EmailStr
     name: str
 
-class UserCreate(UserBase):
+class UserCreateRequest(UserBase):
     password: str
 
 class User(UserBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-class UserSignIn(BaseModel):
+class UserSignInRequest(BaseModel):
     email: EmailStr
     password: str
 
+
 class UserSignInResponse(BaseModel):
-    email: EmailStr
-    token: str
+    access_token: str
+    token_type: str = "bearer"
 
