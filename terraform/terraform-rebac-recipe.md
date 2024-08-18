@@ -127,8 +127,14 @@ resource "permitio_role" "comment_moderator" {
 
    #### The 3 last steps should be implemented in your code base or in permit ui dashboard  - 5,6 steps create the actual user and resource items of your system (facts) and 7 step is the permission check which return the result if your user(or any identity) can perform the action he desired on the resource.
 
-   ## 5. Creating a resource instance
+   ### 5. [Creating a resource instance](https://api.permit.io/v2/redoc#tag/Resource-Instances)
 
-   ## 6. Assigning resource instances to a user
+   ### 6. [Assigning resource instances to a user](https://api.permit.io/v2/redoc#tag/Role-Assignments)
 
-   ## 7. Enforcing your policies in your code
+   ### 7. [Create realationship tuple](https://api.permit.io/v2/redoc#tag/Relationship-tuples)
+
+   ### 8. Enforcing your policies in your code
+    ```
+            allowed = await permit.check(user, 'delete', f"comment:{comment_id}")
+
+    ```
