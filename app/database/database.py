@@ -34,11 +34,8 @@ class DatabaseSessionManager:
             raise Exception("DatabaseSessionManager is not initialized")
 
         async with self._engine.begin() as connection:
-            try:
-                yield connection
-            except Exception:
-                await connection.rollback()
-                raise
+            yield connection
+           
 
     @contextlib.asynccontextmanager
     async def session(self) -> AsyncIterator[AsyncSession]:
