@@ -82,6 +82,7 @@ go to your project dashboard you should see your policies resources and roles.
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
  #### We get an 403 status with the message Not authorized 🔒
 
+## rBAC Case
  ### Now Lets create new user but now with **creator** permissions
 
   - Signup a new user with the email **creator@gmail.com** using the [sign up request](http://127.0.0.1:8000/docs#/auth/create_user_route_auth_signup__post)
@@ -96,8 +97,6 @@ go to your project dashboard you should see your policies resources and roles.
   }
     ```
 
-
-
  ### Lets try to create new design when we signed as creator 
  - Signin (In the swagger page press on the authorized button and paste the user email)
  - Try to create design using the [create design request](http://127.0.0.1:8000/docs#/design/create_design_design_post)
@@ -105,14 +104,13 @@ go to your project dashboard you should see your policies resources and roles.
 
  - Now [Lets comment on the design](http://localhost:8000/docs#/comment/create_comment_comment_post) with creator user
 
+ ## aBAC case 
+ - [Delete the comment the creator](http://localhost:8000/docs#/comment/delete_comment_comment__comment_id__delete) just commented  
 
- ## Abac case 
- - Now we are going to delete the comment the creator just write  
+ ## ReBAC case 
+ - Lets [delete the design of the creator](http://localhost:8000/docs#/comment/delete_comment_comment__comment_id__delete) just commented  
  
- ## Rebac case 
- - Now lets create new user with permissions of manager 
- - Lets try to delete the design we created before using the creator user
- 
+
 
     
 
