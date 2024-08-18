@@ -32,7 +32,7 @@ set his authority
 ### Set App Permit Policy Using permit-terraform-provider
 - load env variables to the shell
 
-  ``` export TF_VAR_permit_api_key=<PERMIT_API_KEY> ```
+  ``` export TF_VAR_permit_api_key=<permit_api_key> ```
 
 - Applying the terraform plan
   ```
@@ -46,14 +46,14 @@ go to your project dashboard you should see your policies resources and roles.
 
 - Create .env file(look at .env.dev) and paste the api key to the .env file 
   ```
-  PERMIT_API_KEY=<API_KEY_HERE>
-  CONNECTION_STRING=<CONNECTION_STRING>
+  permit_api_key=<API_KEY_HERE>
+  connection_string=<connection_string>
   ```
 
   for example 
   ```
-  PERMIT_API_KEY=permit_key_xxxxxx
-  CONNECTION_STRING=postgresql+asyncpg://postgres:postgres@db/design_app_db
+  permit_api_key=permit_key_xxxxxx
+  connection_string=postgresql+asyncpg://postgres:postgres@db/design_app_db
   ```
  - run ``` docker-compose up -d ``` (deploy the pdp, the db ,and the app)
 

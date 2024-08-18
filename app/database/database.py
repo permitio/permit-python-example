@@ -34,11 +34,8 @@ class DatabaseSessionManager:
             raise Exception("DatabaseSessionManager is not initialized")
 
         async with self._engine.begin() as connection:
-            try:
-                yield connection
-            except Exception:
-                await connection.rollback()
-                raise
+            yield connection
+           
 
     @contextlib.asynccontextmanager
     async def session(self) -> AsyncIterator[AsyncSession]:
@@ -55,7 +52,7 @@ class DatabaseSessionManager:
             await session.close()
 
 
-sessionmanager = DatabaseSessionManager(settings.CONNECTION_STRING, {"echo": settings.echo_sql})
+sessionmanager = DatabaseSessionManager(settings.connection_string, {"echo": settings.echo_sql})
 
 
 async def get_db_session():

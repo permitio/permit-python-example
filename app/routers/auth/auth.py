@@ -5,6 +5,9 @@ from app.permit.permit_api import sync_user, assign_role
 from app.database import crud
 from app.routers.auth.schema import  UserSignInRequest, UserSignInResponse, UserBase, UserCreateRequest
 from permit.api.models import RoleAssignmentCreate, UserCreate, RoleAssignmentRead
+from fastapi import status
+
+
 router = APIRouter(
     prefix="/auth",
     tags=["auth"]
@@ -18,13 +21,13 @@ async def create_user_route(user: UserCreateRequest, db_session = Depends(get_db
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # Prepare data for syncing with permit API
-    user_data: UserCreate = {
-        "key": user.email,
-        "email": user.email,
-        "first_name": user.name,
-        "last_name": '-',
-        "attributes": {},
-    }
+    user_data =  UserCreate(
+        key = user.email,
+        email = user.email,
+        first_name = user.name,
+        last_name = '-',
+        attributes = {},
+    )
     
     # Sync user with permit API
     synced_user = await sync_user(user_data)
@@ -45,7 +48,7 @@ async def sign_in(user: UserSignInRequest,  db_session = Depends(get_db_session)
     decoded_password = base64.b64decode(db_user.hash_pwd).decode('utf-8')
 
     if not db_user or not decoded_password == user.password:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid credentials")
     
     token = UserSignInResponse(
     access_token="fake-jwt-token-for-demo"
