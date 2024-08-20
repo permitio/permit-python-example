@@ -54,7 +54,7 @@ go to your project dashboard you should see your policies resources and roles.
   for example 
   ```
   permit_api_key=permit_key_xxxxxx
-  pdp_address=
+  pdp_address=http://localhost:7766
   connection_string=postgresql+asyncpg://postgres:postgres@db/design_app_db
   ```
  - run ``` source .env ```
