@@ -36,7 +36,7 @@ set his authority
 
 - Applying the terraform plan
   ```
-  cd terraform && terraform init && terraform plan && terraform apply -auto-approve
+  cd terraform && terraform init && terraform plan && terraform apply -auto-approve && cd ..
   ```
 
 go to your project dashboard you should see your policies resources and roles.
@@ -46,15 +46,18 @@ go to your project dashboard you should see your policies resources and roles.
 
 - Create .env file(look at .env.dev) and paste the api key to the .env file 
   ```
-  permit_api_key=<API_KEY_HERE>
+  permit_api_key=<permit_api_key>
+  pdp_address=<pdp_address>
   connection_string=<connection_string>
   ```
 
   for example 
   ```
   permit_api_key=permit_key_xxxxxx
+  pdp_address=http://localhost:7766
   connection_string=postgresql+asyncpg://postgres:postgres@db/design_app_db
   ```
+ - run ``` source .env ```
  - run ``` docker-compose up -d ``` (deploy the pdp, the db ,and the app)
 
  ## Use The App

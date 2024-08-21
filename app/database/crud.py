@@ -7,6 +7,7 @@ from app.routers.comments.schemas import CommentBase, CommentDelete, CommentEdit
 from app.routers.designs.schemas import DesignCreate, DesignDelete
 from app.database.models import User, Design, Comment
 from fastapi import status
+
 ##### USER CRUD OPERATIONS ####
 
 async def get_user(db_session: AsyncSession, user: Any) -> User:
